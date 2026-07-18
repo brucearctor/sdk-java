@@ -79,14 +79,15 @@ protobuf {
     // version/variables substitution is not supported in protobuf section.
     // protoc and protoc-gen-grpc-java versions are selected to be compatible
     // with the oldest supported versions of protoc and grpc artifacts.
-    //
-    // The ternary operators look backward, be assured they are not. There are no aarch64 binaries
-    // for this version and so we are relying on Rosetta. See CONTRIBUTING.md if this breaks for you.
     protoc {
-        artifact = 'com.google.protobuf:protoc:3.25.5' + (System.getProperty("os.arch") == 'aarch64' && System.getProperty("os.name") == 'Mac OS X' ? ':osx-x86_64' : '')
+        artifact = 'com.google.protobuf:protoc:3.25.5'
     }
     plugins {
         grpc {
+            // protoc-gen-grpc-java 1.34.1 does not ship osx-aarch_64 binaries,
+            // so we force osx-x86_64 on Apple Silicon and rely on Rosetta.
+            // We can't bump beyond 1.38.x without raising the minimum supported
+            // gRPC runtime version. See CONTRIBUTING.md if this breaks for you.
             artifact = 'io.grpc:protoc-gen-grpc-java:1.34.1' + (System.getProperty("os.arch") == 'aarch64' && System.getProperty("os.name") == 'Mac OS X' ? ':osx-x86_64' : '')
         }
     }

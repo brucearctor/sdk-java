@@ -74,9 +74,15 @@ USE_EXTERNAL_SERVICE=true ./gradlew test
 
 ## Note on Rosetta
 
-Newer Apple Silicon macs do not ship with Rosetta by default, and the version of `protoc-gen-rpc-java` we use (1.34.1) does not ship Apple Silicon binaries.
+Newer Apple Silicon macs do not ship with Rosetta by default. The version of `protoc-gen-grpc-java` we use (1.34.1) does not ship Apple Silicon binaries, so Gradle is set to hardcode the download of the x86_64 binary for this plugin on macOS. This depends on Rosetta to function.
 
-So Gradle is set to hardcode the download of the x86_64 binaries on MacOS, but this depends on Rosetta to function. Make sure Rosetta is installed with
+Note: `protoc` itself (3.25.5) ships native Apple Silicon binaries and does not require Rosetta.
+
+We keep `protoc-gen-grpc-java` at 1.34.1 because the generated code must be compatible with gRPC runtimes as old as 1.38.0. Bumping it would raise the minimum supported gRPC runtime version for SDK users.
+
+Starting with version 1.43.0, `protoc-gen-grpc-java` publishes an `osx-aarch_64` artifact (which is the same universal binary as `osx-x86_64`). If the minimum supported gRPC runtime is ever raised to ≥ 1.43.0, the `osx-x86_64` override in the build files can be removed and the Rosetta requirement dropped.
+
+Make sure Rosetta is installed with
 
 ```bash
 /usr/bin/pgrep oahd
